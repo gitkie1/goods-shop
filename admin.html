@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>관리자 | 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="shop.html">굿즈샵 · 관리자</a>
+    <nav class="links">
+      <a href="shop.html">상품</a>
+      <a href="orders.html">내 결제내역</a>
+      <a id="logout-link" href="#">로그아웃</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <h1>전체 결제내역</h1>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>구매자</th>
+            <th>상품</th>
+            <th>수량</th>
+            <th>금액</th>
+            <th>상태</th>
+            <th>일시</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body"></tbody>
+      </table>
+    </div>
+    <p class="empty-text" id="orders-empty" hidden>아직 결제내역이 없어요.</p>
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

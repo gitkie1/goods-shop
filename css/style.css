@@ -95,6 +95,10 @@ nav.links a:hover {
   color: var(--blue);
 }
 
+nav.links a[hidden] {
+  display: none;
+}
+
 .card {
   border: 1px solid var(--border);
   border-radius: var(--radius);

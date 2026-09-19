@@ -17,7 +17,7 @@ export async function signOut() {
 
 export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getUser();
-  if (error) throw error;
+  if (error) return null;
   return data.user;
 }
 
@@ -26,7 +26,7 @@ export async function requireLogin() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    window.location.href = "index.html";
+    window.location.href = "login.html";
     return null;
   }
   return user;
@@ -43,7 +43,7 @@ export async function requireAdmin() {
     .single();
 
   if (!profile?.is_admin) {
-    window.location.href = "shop.html";
+    window.location.href = "index.html";
     return null;
   }
   return user;
@@ -51,17 +51,26 @@ export async function requireAdmin() {
 
 export async function wireNav() {
   const logoutLink = document.getElementById("logout-link");
+  const loginLink = document.getElementById("login-link");
+  const ordersLink = document.getElementById("orders-link");
+  const adminLink = document.getElementById("admin-link");
+
   logoutLink?.addEventListener("click", async (e) => {
     e.preventDefault();
     await signOut();
     window.location.href = "index.html";
   });
 
-  const adminLink = document.getElementById("admin-link");
-  if (!adminLink) return;
-
   const user = await getCurrentUser();
-  if (!user) return;
+  if (!user) {
+    if (loginLink) loginLink.hidden = false;
+    return;
+  }
+
+  if (logoutLink) logoutLink.hidden = false;
+  if (ordersLink) ordersLink.hidden = false;
+
+  if (!adminLink) return;
 
   const { data: profile } = await supabase
     .from("profiles")

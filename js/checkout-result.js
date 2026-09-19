@@ -31,7 +31,7 @@ try {
   } else {
     resultCard.innerHTML = `
       <p class="error-text">결제에 실패했어요.</p>
-      <a class="btn block" href="shop.html">상품 목록으로</a>
+      <a class="btn block" href="index.html">상품 목록으로</a>
     `;
   }
 } catch (err) {

@@ -1,13 +1,11 @@
 import { supabase } from "./supabaseClient.js";
-import { requireLogin, wireNav } from "./auth.js";
+import { getCurrentUser, wireNav } from "./auth.js";
 import { TOSS_CLIENT_KEY } from "./config.js";
 import { escapeHtml, formatCurrency } from "./utils.js";
 
-const user = await requireLogin();
-if (user) {
-  wireNav();
-  loadProducts();
-}
+let user = await getCurrentUser();
+wireNav();
+loadProducts();
 
 async function loadProducts() {
   const grid = document.getElementById("product-grid");
@@ -47,6 +45,11 @@ async function loadProducts() {
 }
 
 async function buyProduct(product) {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
   const errorEl = document.getElementById("shop-error");
   errorEl.hidden = true;
 
@@ -57,10 +60,8 @@ async function buyProduct(product) {
     if (error) throw error;
 
     const { orderId, amount, orderName } = data;
-    const resultUrl = `${window.location.origin}${window.location.pathname.replace(
-      "shop.html",
-      "checkout-result.html"
-    )}`;
+    const dir = window.location.pathname.replace(/[^/]*$/, "");
+    const resultUrl = `${window.location.origin}${dir}checkout-result.html`;
 
     const tossPayments = TossPayments(TOSS_CLIENT_KEY);
     const payment = tossPayments.payment({ customerKey: user.id });

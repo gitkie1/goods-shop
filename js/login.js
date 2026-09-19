@@ -5,7 +5,7 @@ const {
   data: { user },
 } = await supabase.auth.getUser();
 if (user) {
-  window.location.href = "shop.html";
+  window.location.href = "index.html";
 }
 
 const loginForm = document.getElementById("login-form");
@@ -19,7 +19,7 @@ loginForm?.addEventListener("submit", async (e) => {
 
   try {
     await signIn(email, password);
-    window.location.href = "shop.html";
+    window.location.href = "index.html";
   } catch (err) {
     loginError.textContent = "로그인에 실패했어요. 이메일/비밀번호를 확인해주세요.";
     loginError.hidden = false;

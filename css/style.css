@@ -106,6 +106,12 @@ nav.links a[hidden] {
   background: var(--bg);
 }
 
+a.card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 .card + .card {
   margin-top: 16px;
 }
@@ -164,6 +170,15 @@ nav.links a[hidden] {
   width: 100%;
 }
 
+.btn-row {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-row .btn {
+  flex: 1;
+}
+
 .error-text {
   color: var(--danger);
   font-size: 0.9rem;
@@ -213,6 +228,17 @@ nav.links a[hidden] {
 .product-price {
   font-weight: 700;
   margin: 0 0 16px;
+}
+
+.detail-thumb {
+  width: 100%;
+  max-width: 360px;
+  height: 360px;
+  border-radius: 12px;
+  background: var(--cream);
+  margin-bottom: 16px;
+  object-fit: cover;
+  display: block;
 }
 
 .table-scroll {

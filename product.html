@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>상품 상세 | 굿즈샵</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="index.html">굿즈샵</a>
+    <nav class="links">
+      <a href="index.html">상품</a>
+      <a id="orders-link" href="orders.html" hidden>내 결제내역</a>
+      <a id="admin-link" href="admin.html" hidden>관리자</a>
+      <a id="login-link" href="login.html" hidden>로그인</a>
+      <a id="logout-link" href="#" hidden>로그아웃</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <div class="card" id="product-detail"></div>
+    <p class="error-text" id="detail-error" hidden></p>
+  </div>
+
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+  <script type="module" src="js/product.js"></script>
+</body>
+</html>

@@ -327,6 +327,10 @@ a.card:hover {
   margin: 0 0 16px;
 }
 
+.payment-widget-block {
+  margin-bottom: 16px;
+}
+
 .detail-thumb {
   width: 100%;
   max-width: 360px;

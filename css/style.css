@@ -131,6 +131,7 @@ header.bar {
   position: sticky;
   top: 0;
   z-index: 10;
+  padding-top: max(16px, env(safe-area-inset-top));
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -419,4 +420,62 @@ tbody tr:hover {
   .narrow {
     margin: 24px auto;
   }
+}
+
+.pwa-install-banner {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-install-btn {
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pwa-install-btn:hover {
+  background: var(--accent-hover);
+}
+
+.pwa-install-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pwa-install-close:hover {
+  background: var(--bg);
 }

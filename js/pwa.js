@@ -4,21 +4,23 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-const DISMISS_KEY = "pwa-install-dismissed-v2";
-const DISMISS_DAYS = 14;
+const INSTALLED_KEY = "pwa-installed";
 
 function isStandalone() {
   return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 }
 
-function isDismissed() {
-  const dismissedAt = Number(localStorage.getItem(DISMISS_KEY));
-  if (!dismissedAt) return false;
-  const days = (Date.now() - dismissedAt) / (1000 * 60 * 60 * 24);
-  return days < DISMISS_DAYS;
+// 설치된 앱으로 열렸으면 "설치됨"으로 기억 (안드로이드는 브라우저와 기록을 공유함)
+if (isStandalone()) localStorage.setItem(INSTALLED_KEY, "1");
+
+function isInstalled() {
+  return isStandalone() || localStorage.getItem(INSTALLED_KEY) === "1";
 }
 
+let closed = false;
+
 function showInstallButton(onClick) {
+  if (closed || document.querySelector(".pwa-install")) return;
   const wrap = document.createElement("div");
   wrap.className = "pwa-install";
   wrap.innerHTML = `
@@ -27,12 +29,13 @@ function showInstallButton(onClick) {
   `;
   document.body.appendChild(wrap);
 
+  // 닫기는 지금 보는 페이지에서만 숨김 (설치 전까지 다음 페이지·방문 때 다시 뜸)
   wrap.querySelector(".pwa-install-close").addEventListener("click", () => {
-    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    closed = true;
     wrap.remove();
   });
 
-  wrap.querySelector(".pwa-install-btn").addEventListener("click", (e) => onClick(e.currentTarget, wrap));
+  wrap.querySelector(".pwa-install-btn").addEventListener("click", (e) => onClick(e.currentTarget));
 }
 
 const ua = navigator.userAgent;
@@ -42,11 +45,11 @@ const isInApp = /kakaotalk|naver|instagram|fban|fbav|line\//i.test(ua);
 
 let installPrompt = null;
 
-function onInstallClick(btn, wrap) {
+function onInstallClick(btn) {
   if (installPrompt) {
-    // 크롬·엣지: 바로 설치 창이 뜸
-    wrap.remove();
+    // 크롬·엣지·삼성인터넷: 설치 확인 창이 뜸 (설치되면 appinstalled 에서 버튼 제거)
     installPrompt.prompt();
+    installPrompt = null;
   } else if (isInApp) {
     btn.textContent = "크롬·사파리로 열어서 설치해주세요";
   } else if (isIOS) {
@@ -56,17 +59,18 @@ function onInstallClick(btn, wrap) {
   }
 }
 
-if (!isStandalone() && !isDismissed()) {
-  // 모바일은 항상 버튼을 보여줌 (설치 창을 못 띄우는 브라우저면 누를 때 방법 안내)
-  if (isMobile) showInstallButton(onInstallClick);
+// 모바일은 설치 전까지 항상 버튼을 보여줌
+if (isMobile && !isInstalled()) showInstallButton(onInstallClick);
 
-  window.addEventListener("beforeinstallprompt", (event) => {
-    event.preventDefault();
-    installPrompt = event;
-    if (!document.querySelector(".pwa-install")) showInstallButton(onInstallClick);
-  });
-}
+// 브라우저가 "설치 가능"이라고 알려주면 = 아직 설치 안 된 상태 (지웠다면 기록도 초기화)
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  localStorage.removeItem(INSTALLED_KEY);
+  installPrompt = event;
+  if (!isStandalone()) showInstallButton(onInstallClick);
+});
 
 window.addEventListener("appinstalled", () => {
+  localStorage.setItem(INSTALLED_KEY, "1");
   document.querySelector(".pwa-install")?.remove();
 });

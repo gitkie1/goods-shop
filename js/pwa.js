@@ -18,41 +18,44 @@ function isDismissed() {
   return days < DISMISS_DAYS;
 }
 
-function showInstallBanner(message, onInstall) {
-  const banner = document.createElement("div");
-  banner.className = "pwa-install-banner";
-  banner.innerHTML = `
-    <span>${message}</span>
-    <div class="pwa-install-actions">
-      ${onInstall ? '<button type="button" class="pwa-install-btn">설치</button>' : ""}
-      <button type="button" class="pwa-install-close" aria-label="닫기">&times;</button>
-    </div>
+function showInstallButton(onClick) {
+  const wrap = document.createElement("div");
+  wrap.className = "pwa-install";
+  wrap.innerHTML = `
+    <button type="button" class="pwa-install-btn">&#8595; 앱 설치</button>
+    <button type="button" class="pwa-install-close" aria-label="닫기">&times;</button>
   `;
-  document.body.appendChild(banner);
+  document.body.appendChild(wrap);
 
-  banner.querySelector(".pwa-install-close").addEventListener("click", () => {
+  wrap.querySelector(".pwa-install-close").addEventListener("click", () => {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
-    banner.remove();
+    wrap.remove();
   });
 
-  if (onInstall) {
-    banner.querySelector(".pwa-install-btn").addEventListener("click", () => {
-      banner.remove();
-      onInstall();
-    });
-  }
+  wrap.querySelector(".pwa-install-btn").addEventListener("click", (e) => onClick(e.currentTarget, wrap));
 }
 
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-const isAndroid = /android/i.test(navigator.userAgent);
 
-if (!isStandalone() && !isDismissed() && (isIOS || isAndroid)) {
+if (!isStandalone() && !isDismissed()) {
   if (isIOS) {
-    showInstallBanner("Safari 공유 버튼을 누른 뒤 '홈 화면에 추가'를 선택해보세요.");
+    // 아이폰은 자동 설치가 안 돼서, 누르면 방법을 안내
+    showInstallButton((btn) => {
+      btn.textContent = "공유 → '홈 화면에 추가'";
+    });
   } else {
+    // 크롬·엣지(PC/안드로이드): 누르면 바로 설치 창이 뜸
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
-      showInstallBanner("홈 화면에 추가하고 앱처럼 사용해보세요.", () => event.prompt());
+      if (document.querySelector(".pwa-install")) return;
+      showInstallButton((btn, wrap) => {
+        wrap.remove();
+        event.prompt();
+      });
     });
   }
 }
+
+window.addEventListener("appinstalled", () => {
+  document.querySelector(".pwa-install")?.remove();
+});

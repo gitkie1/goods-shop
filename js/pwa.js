@@ -4,7 +4,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-const DISMISS_KEY = "pwa-install-dismissed";
+const DISMISS_KEY = "pwa-install-dismissed-v2";
 const DISMISS_DAYS = 14;
 
 function isStandalone() {
@@ -35,25 +35,36 @@ function showInstallButton(onClick) {
   wrap.querySelector(".pwa-install-btn").addEventListener("click", (e) => onClick(e.currentTarget, wrap));
 }
 
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const ua = navigator.userAgent;
+const isIOS = /iphone|ipad|ipod/i.test(ua);
+const isMobile = isIOS || /android|mobile/i.test(ua);
+const isInApp = /kakaotalk|naver|instagram|fban|fbav|line\//i.test(ua);
+
+let installPrompt = null;
+
+function onInstallClick(btn, wrap) {
+  if (installPrompt) {
+    // 크롬·엣지: 바로 설치 창이 뜸
+    wrap.remove();
+    installPrompt.prompt();
+  } else if (isInApp) {
+    btn.textContent = "크롬·사파리로 열어서 설치해주세요";
+  } else if (isIOS) {
+    btn.textContent = "공유 → '홈 화면에 추가'";
+  } else {
+    btn.textContent = "메뉴(⋮) → '홈 화면에 추가'";
+  }
+}
 
 if (!isStandalone() && !isDismissed()) {
-  if (isIOS) {
-    // 아이폰은 자동 설치가 안 돼서, 누르면 방법을 안내
-    showInstallButton((btn) => {
-      btn.textContent = "공유 → '홈 화면에 추가'";
-    });
-  } else {
-    // 크롬·엣지(PC/안드로이드): 누르면 바로 설치 창이 뜸
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      if (document.querySelector(".pwa-install")) return;
-      showInstallButton((btn, wrap) => {
-        wrap.remove();
-        event.prompt();
-      });
-    });
-  }
+  // 모바일은 항상 버튼을 보여줌 (설치 창을 못 띄우는 브라우저면 누를 때 방법 안내)
+  if (isMobile) showInstallButton(onInstallClick);
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    installPrompt = event;
+    if (!document.querySelector(".pwa-install")) showInstallButton(onInstallClick);
+  });
 }
 
 window.addEventListener("appinstalled", () => {
